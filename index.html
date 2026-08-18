@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Skor Tes PRETENS - Universitas Esa Unggul</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; padding: 40px 20px; margin: 0; }
+        .container { max-width: 550px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: auto; border-top: 6px solid #f37021; }
+        .header-logo { text-align: center; margin-bottom: 20px; }
+        .header-logo h3 { margin: 5px 0; color: #333; }
+        .header-logo p { margin: 0; color: #666; font-size: 14px; }
+        label { font-weight: bold; color: #444; display: block; margin-bottom: 8px; font-size: 14px; }
+        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        input[type="text"]:focus { border-color: #f37021; outline: none; }
+        button { background: #f37021; color: white; padding: 12px; border: none; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #d65a12; }
+        .loading { text-align: center; color: #f37021; display: none; font-weight: bold; margin: 15px 0; }
+        .result { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; line-height: 1.6; border: 1px solid #ccc; }
+        .valid { background: #e6f4ea; border-left: 5px solid #137333; color: #137333; }
+        .invalid { background: #fce8e6; border-left: 5px solid #c5221f; color: #c5221f; }
+        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+        table td { padding: 6px 0; vertical-align: top; }
+        table td:first-child { width: 35%; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-logo">
+        <h3>LEMBAGA BAHASA DAN KEBUDAYAAN</h3>
+        <h3>UNIVERSITAS ESA UNGGUL</h3>
+        <p>Verifikasi Hasil Akhir & Sertifikat Tes PRETENS</p>
+    </div>
+    
+    <form id="searchForm">
+        <label for="searchKey">Masukkan NIM atau Nama Lengkap Peserta:</label>
+        <input type="text" id="searchKey" placeholder="Contoh: 20231102053 atau ARIQ NAFIL" required>
+        <button type="submit">Cek Hasil & Sertifikat</button>
+    </form>
+
+    <div id="loadingBox" class="loading">Menghubungkan ke Database Universitas...</div>
+    <div id="resultBox" class="result"></div>
+</div>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const searchKey = document.getElementById('searchKey').value;
+        const loadingBox = document.getElementById('loadingBox');
+        const resultBox = document.getElementById('resultBox');
+        
+        // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzwyaase4JENWmB3cYOJCzb2qRPL2MSmzCsRgO6mcVRoog2W5oMtkELA4e0v7vCjNMwag/exec" + encodeURIComponent(searchKey);
+        
+        loadingBox.style.display = 'block';
+        resultBox.style.display = 'none';
+        
+        fetch(webAppUrl)
+            .then(response => response.json())
+            .then(data => {
+                loadingBox.style.display = 'none';
+                resultBox.style.display = 'block';
+                
+                if(data.status === "success") {
+                    if(data.is_valid) {
+                        resultBox.className = "result valid";
+                    } else {
+                        resultBox.className = "result invalid";
+                    }
+                    
+                    resultBox.innerHTML = `
+                        <div style="font-size: 16px; font-weight: bold; border-bottom: 1px solid; padding-bottom: 8px; margin-bottom: 10px;">
+                            ${data.is_valid ? '✓ DATA DIKETAHUI & SERTIFIKAT VALID' : '⚠ DATA DIKETAHUI - TIDAK LULUS STANDAR'}
+                        </div>
+                        <table>
+                            <tr><td>Nama Lengkap</td><td>: ${data.nama}</td></tr>
+                            <tr><td>NIM</td><td>: ${data.nim}</td></tr>
+                            <tr><td>Jenjang</td><td>: ${data.jenjang}</td></tr>
+                            <tr><td>Program Studi</td><td>: ${data.prodi}</td></tr>
+                            <tr><td>Tanggal Tes</td><td>: ${data.tanggal}</td></tr>
+                            <tr><td>Total Skor PRETENS</td><td>: <span style="font-size: 18px; font-weight: bold;">${data.skor}</span></td></tr>
+                            <tr><td>Status Kelulusan</td><td>: <b>${data.status_kelulusan}</b></td></tr>
+                        </table>
+                    `;
+                } else {
+                    resultBox.className = "result invalid";
+                    resultBox.innerHTML = `
+                        <strong>✕ DATA TIDAK DITEMUKAN</strong><br>
+                        NIM atau Nama Peserta tidak terdaftar dalam hasil data tes PRETENS resmi. Silakan periksa kembali penulisan Anda.
+                    `;
+                }
+            })
+            .catch(error => {
+                loadingBox.style.display = 'none';
+                resultBox.style.display = 'block';
+                resultBox.className = "result invalid";
+                resultBox.innerHTML = "<strong>Error:</strong> Gagal mengambil data dari Google Sheets. Periksa koneksi internet atau setelan deployment Anda.";
+                console.error(error);
+            });
+    });
+</script>
+
+</body>
+</html>
