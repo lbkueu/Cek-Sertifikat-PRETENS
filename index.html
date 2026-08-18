@@ -35,7 +35,7 @@
     
     <form id="searchForm">
         <label for="searchKey">Masukkan NIM atau Nama Lengkap Peserta:</label>
-        <input type="text" id="searchKey" placeholder="Contoh: 20231102053 atau ARIO NAFIL" required>
+        <input type="text" id="searchKey" placeholder="Contoh: 20231102053 atau ARIQ NAFIL" required>
         <button type="submit">Cek Hasil & Sertifikat</button>
     </form>
 
@@ -52,7 +52,7 @@
         const resultBox = document.getElementById('resultBox');
         
         // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbz1mQbflPrHiYJlGjVn_ET3MWANIczwKvMNgG3Gh5RIDIzmVYCOpiCo19_Dnxd61h8Bug/exec" + encodeURIComponent(searchKey);
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzwyaase4JENWmB3cYOJCzb2qRPL2MSmzCsRgO6mcVRoog2W5oMtkELA4e0v7vCjNMwag/exec" + encodeURIComponent(searchKey);
         
         loadingBox.style.display = 'block';
         resultBox.style.display = 'none';
